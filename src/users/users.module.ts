@@ -6,11 +6,12 @@ import { DirectorController } from './director/directors.controller';
 import { DirectorService } from './director/directors.service';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
+import { AdminService } from './admin/admins.service';
 
 @Module({
   imports: [SequelizeModule.forFeature([Users]), JwtModule.register({})],
   controllers: [DirectorController, AuthController],
-  providers: [DirectorService, AuthService],
-  exports: [DirectorService, AuthService],
+  providers: [DirectorService, AuthService, AdminService],
+  exports: [DirectorService, AuthService, AdminService],
 })
 export class UsersModule {}

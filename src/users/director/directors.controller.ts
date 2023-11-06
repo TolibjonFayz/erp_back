@@ -15,7 +15,7 @@ import { DirectorService } from './directors.service';
 import { Users } from '../models/user.model';
 
 @ApiTags('Directors')
-@Controller('director')
+@Controller('api/director')
 export class DirectorController {
   constructor(private readonly directorService: DirectorService) {}
 
