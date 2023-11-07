@@ -11,11 +11,11 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { Response } from 'express';
-import { DirectorService } from './directors.service';
 import { Users } from '../models/user.model';
+import { DirectorService } from './directors.service';
 
 @ApiTags('Directors')
-@Controller('api/director')
+@Controller('director')
 export class DirectorController {
   constructor(private readonly directorService: DirectorService) {}
 

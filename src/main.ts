@@ -20,7 +20,7 @@ const start = async () => {
     SwaggerModule.setup('/api/docs', app, document);
 
     app.use(cookieParser());
-    // app.setGlobalPrefix('api');
+    app.setGlobalPrefix('api');
     app.useGlobalPipes(new ValidationPipe());
     await app.listen(PORT, () => {
       console.log(`Server is running at ${PORT}`);
