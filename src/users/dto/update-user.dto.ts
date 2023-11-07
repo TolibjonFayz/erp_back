@@ -31,5 +31,5 @@ export class UpdateUserDto {
     description: 'Rasm linki',
   })
   @IsString()
-  image: String;
+  image: string;
 }

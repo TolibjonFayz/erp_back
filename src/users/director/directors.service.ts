@@ -18,7 +18,7 @@ export class DirectorService {
     const director = await this.DirectorRepo.findOne({
       where: { phone: createUserDto.phone },
     });
-    if (director) throw new BadRequestException('Director already exists');
+    if (director) throw new BadRequestException('Staff already exists');
 
     const hashed_password = await bcrypt.hash(createUserDto.password, 7);
     const newDirector = await this.DirectorRepo.create({
@@ -46,7 +46,7 @@ export class DirectorService {
     });
 
     const response = {
-      message: 'Director created successfully',
+      message: 'Staff created successfully',
       user: {
         first_name: updateDirector[1][0].first_name,
         last_name: updateDirector[1][0].last_name,

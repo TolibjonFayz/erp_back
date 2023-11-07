@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -9,6 +10,7 @@ import { Users } from '../models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class AdminService {
@@ -104,5 +106,55 @@ export class AdminService {
     });
     if (delStaff) return delStaff;
     throw new ForbiddenException('You can not delete this staff(role)');
+  }
+
+  //Update student
+  async updateStudent(id: number, updateUserDto: UpdateUserDto) {
+    const student = await this.AdminRepo.findOne({
+      where: { id: id, role: 'student' },
+    });
+    if (student) {
+      const updating = await this.AdminRepo.update(updateUserDto, {
+        where: { id: id, role: 'student' },
+        returning: true,
+      });
+      return updating[1][0].dataValues;
+    }
+    throw new NotFoundException('Student not found or smt error');
+  }
+
+  //Get student by id
+  async getStudentById(id: number) {
+    const student = await this.AdminRepo.findOne({
+      where: { id: id, role: 'student' },
+    });
+    if (student) return student;
+    throw new NotFoundException('Student not found');
+  }
+
+  //Get all teachers
+  async getAllTeachers() {
+    const teachers = await this.AdminRepo.findAll({
+      where: { role: 'teacher' },
+    });
+    return teachers;
+  }
+
+  //Get teacher by id
+  async getTeacherById(id: number) {
+    const teacher = await this.AdminRepo.findOne({
+      where: { id: id, role: 'teacher' },
+    });
+    if (teacher) return teacher;
+    throw new NotFoundException('Teacher not found or smt wrong');
+  }
+
+  //Get admin by id
+  async getAdminById(id: number) {
+    const admin = await this.AdminRepo.findOne({
+      where: { id: id, role: 'admin' },
+    });
+    if (admin) return admin;
+    throw new NotFoundException('Admin not found or smt wrong');
   }
 }

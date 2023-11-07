@@ -25,7 +25,7 @@ export class DirectorController {
     status: 400,
     description: 'Staff already activated or smt wrong',
   })
-  @ApiOperation({ summary: 'Create director' })
+  @ApiOperation({ summary: 'Create staff' })
   @Post('create-staff')
   async create(
     @Body() createUserDto: CreateUserDto,
