@@ -21,6 +21,7 @@ export class AuthService {
   async getTokens(user: Users) {
     const JwtPayload = {
       id: user.id,
+      role: user.role,
       is_active: user.status,
     };
 

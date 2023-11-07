@@ -14,7 +14,7 @@ import { Response } from 'express';
 import { Users } from '../models/user.model';
 import { DirectorService } from './directors.service';
 
-@ApiTags('Directors')
+@ApiTags('Director')
 @Controller('director')
 export class DirectorController {
   constructor(private readonly directorService: DirectorService) {}

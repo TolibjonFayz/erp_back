@@ -5,8 +5,7 @@ import { Users } from '../models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
-import { SigninUserDto } from '../dto/signinUser.dto';
-
+import { Op } from 'sequelize';
 @Injectable()
 export class DirectorService {
   constructor(
@@ -66,6 +65,7 @@ export class DirectorService {
   async getTokens(user: Users) {
     const JwtPayload = {
       id: user.id,
+      role: user.role,
       is_active: user.status,
     };
 
@@ -106,7 +106,9 @@ export class DirectorService {
 
   //Get all staffs
   async getAllStaffs() {
-    const staffs = this.DirectorRepo.findAll({});
+    const staffs = this.DirectorRepo.findAll({
+      where: { role: { [Op.not]: 'student' } },
+    });
     return staffs;
   }
 

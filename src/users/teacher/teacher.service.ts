@@ -11,33 +11,33 @@ import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class AdminService {
+export class TeacherService {
   constructor(
-    @InjectModel(Users) private AdminRepo: typeof Users,
+    @InjectModel(Users) private TeacherRepo: typeof Users,
     private readonly jwtservice: JwtService,
   ) {}
 
-  //Add student
-  async addStudent(createUserDto: CreateUserDto, res: Response) {
-    const student = await this.AdminRepo.findOne({
+  //Add teacher
+  async addTeacher(createUserDto: CreateUserDto, res: Response) {
+    const teacher = await this.TeacherRepo.findOne({
       where: { phone: createUserDto.phone },
     });
-    if (student) throw new BadRequestException('Student already exists');
+    if (teacher) throw new BadRequestException('Teacher already exists');
 
     const hashed_password = await bcrypt.hash(createUserDto.password, 7);
-    const newStudent = await this.AdminRepo.create({
+    const newTeacher = await this.TeacherRepo.create({
       ...createUserDto,
       password: hashed_password,
     });
 
-    const tokens = await this.getTokens(newStudent);
+    const tokens = await this.getTokens(newTeacher);
     const hashed_refresh_token = await bcrypt.hash(tokens.refresh_token, 7);
-    const updateStudent = await this.AdminRepo.update(
+    const updateTeacher = await this.TeacherRepo.update(
       {
         refresh_token: hashed_refresh_token,
       },
       {
-        where: { id: newStudent.id },
+        where: { id: newTeacher.id },
         returning: true,
       },
     );
@@ -45,19 +45,19 @@ export class AdminService {
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 15 * 24 * 60 * 60 * 1000,
     });
-    res.cookie('role', newStudent.role, {
+    res.cookie('role', newTeacher.role, {
       maxAge: 15 * 24 * 60 * 60 * 1000,
     });
 
     const response = {
-      message: 'Student created successfully',
+      message: 'Teacher created successfully',
       user: {
-        first_name: updateStudent[1][0].first_name,
-        last_name: updateStudent[1][0].last_name,
-        phone: updateStudent[1][0].phone,
-        image: updateStudent[1][0].image,
-        role: updateStudent[1][0].role,
-        status: updateStudent[1][0].status,
+        first_name: updateTeacher[1][0].first_name,
+        last_name: updateTeacher[1][0].last_name,
+        phone: updateTeacher[1][0].phone,
+        image: updateTeacher[1][0].image,
+        role: updateTeacher[1][0].role,
+        status: updateTeacher[1][0].status,
       },
       tokens,
     };
@@ -89,20 +89,20 @@ export class AdminService {
     };
   }
 
-  //Get all students
-  async getAllStudent() {
-    const staffs = this.AdminRepo.findAll({ where: { role: 'student' } });
-    return staffs;
+  //Get all teachers
+  async getAllTeachers() {
+    const teachers = this.TeacherRepo.findAll({ where: { role: 'teacher' } });
+    return teachers;
   }
 
-  //Delete student
-  async deleteStudent(id: number) {
-    const staff = await this.AdminRepo.findOne({ where: { id: id } });
-    if (!staff) throw new BadRequestException('Student not found at this id');
-    const delStaff = await this.AdminRepo.destroy({
-      where: { id: id, role: 'student' },
+  //Delete teacher
+  async deleteTeacher(id: number) {
+    const teacher = await this.TeacherRepo.findOne({ where: { id: id } });
+    if (!teacher) throw new BadRequestException('Teacher not found at this id');
+    const delTeacher = await this.TeacherRepo.destroy({
+      where: { id: id, role: 'teacher' },
     });
-    if (delStaff) return delStaff;
+    if (delTeacher) return delTeacher;
     throw new ForbiddenException('You can not delete this staff(role)');
   }
 }

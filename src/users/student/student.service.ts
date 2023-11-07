@@ -11,28 +11,28 @@ import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class AdminService {
+export class StudentService {
   constructor(
-    @InjectModel(Users) private AdminRepo: typeof Users,
+    @InjectModel(Users) private StudentRepo: typeof Users,
     private readonly jwtservice: JwtService,
   ) {}
 
-  //Add student
-  async addStudent(createUserDto: CreateUserDto, res: Response) {
-    const student = await this.AdminRepo.findOne({
+  //Create student
+  async createStudent(createUserDto: CreateUserDto, res: Response) {
+    const student = await this.StudentRepo.findOne({
       where: { phone: createUserDto.phone },
     });
     if (student) throw new BadRequestException('Student already exists');
 
     const hashed_password = await bcrypt.hash(createUserDto.password, 7);
-    const newStudent = await this.AdminRepo.create({
+    const newStudent = await this.StudentRepo.create({
       ...createUserDto,
       password: hashed_password,
     });
 
     const tokens = await this.getTokens(newStudent);
     const hashed_refresh_token = await bcrypt.hash(tokens.refresh_token, 7);
-    const updateStudent = await this.AdminRepo.update(
+    const updateStudent = await this.StudentRepo.update(
       {
         refresh_token: hashed_refresh_token,
       },
@@ -90,19 +90,19 @@ export class AdminService {
   }
 
   //Get all students
-  async getAllStudent() {
-    const staffs = this.AdminRepo.findAll({ where: { role: 'student' } });
-    return staffs;
+  async getAllStudents() {
+    const students = this.StudentRepo.findAll({ where: { role: 'student' } });
+    return students;
   }
 
   //Delete student
   async deleteStudent(id: number) {
-    const staff = await this.AdminRepo.findOne({ where: { id: id } });
-    if (!staff) throw new BadRequestException('Student not found at this id');
-    const delStaff = await this.AdminRepo.destroy({
+    const student = await this.StudentRepo.findOne({ where: { id: id } });
+    if (!student) throw new BadRequestException('Student not found at this id');
+    const delStudent = await this.StudentRepo.destroy({
       where: { id: id, role: 'student' },
     });
-    if (delStaff) return delStaff;
+    if (delStudent) return delStudent;
     throw new ForbiddenException('You can not delete this staff(role)');
   }
 }

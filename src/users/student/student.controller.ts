@@ -11,42 +11,42 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { Response } from 'express';
 import { Users } from '../models/user.model';
-import { AdminService } from './admins.service';
+import { StudentService } from './student.service';
 
-@ApiTags('Admins')
-@Controller('admin')
-export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+@ApiTags('Students')
+@Controller('student')
+export class StudentController {
+  constructor(private readonly studentService: StudentService) {}
 
-  //Add student
+  //Create student
   @ApiResponse({ status: 200, description: 'Student successfully created' })
   @ApiResponse({
     status: 400,
     description: 'Student already activated or smt wrong',
   })
-  @ApiOperation({ summary: 'Add student' })
-  @Post('add-student')
+  @ApiOperation({ summary: 'Create Student' })
+  @Post('create-student')
   async create(
     @Body() createUserDto: CreateUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.adminService.addStudent(createUserDto, res);
+    return this.studentService.createStudent(createUserDto, res);
   }
 
   //Get all students
   @ApiResponse({ status: 200, description: 'All students are here' })
   @ApiOperation({ summary: 'Get all students' })
-  @Get('get-students/:q?')
-  async getAllStaffs(): Promise<Users[]> {
-    return this.adminService.getAllStudent();
+  @Get('all/:q?')
+  async getAllStudents(): Promise<Users[]> {
+    return this.studentService.getAllStudents();
   }
 
   //Delete student
   @ApiResponse({ status: 200, description: 'Student successfully deleted' })
   @ApiResponse({ status: 400, description: 'Student not found or smt wrong' })
-  @ApiOperation({ summary: 'Delete staff' })
-  @Delete('delete-student/:id')
-  async deleteSaffById(@Param('id') id: number): Promise<number> {
-    return this.adminService.deleteStudent(id);
+  @ApiOperation({ summary: 'Delete student' })
+  @Delete('delete/:id')
+  async deleteStudent(@Param('id') id: number): Promise<number> {
+    return this.studentService.deleteStudent(id);
   }
 }
