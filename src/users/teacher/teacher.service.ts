@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -9,7 +10,9 @@ import { Users } from '../models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
-
+import { Op, where } from 'sequelize';
+import { GetTeacherByPhoneDto } from '../dto/getTeacherByPhone.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 @Injectable()
 export class TeacherService {
   constructor(
@@ -93,6 +96,42 @@ export class TeacherService {
   async getAllTeachers() {
     const teachers = this.TeacherRepo.findAll({ where: { role: 'teacher' } });
     return teachers;
+  }
+
+  //Get one teacher by id
+  async getTeacherById(id: number) {
+    const teacher = await this.TeacherRepo.findOne({
+      where: { id: id, role: 'teacher' },
+    });
+    if (teacher) return teacher;
+    throw new NotFoundException('Teacher not found or smt wrong');
+  }
+
+  //Find teachers by phone
+  async getTeachersByPhone(getTeacherByPhoneDto: GetTeacherByPhoneDto) {
+    const teacher = await this.TeacherRepo.findAll({
+      where: {
+        role: 'teacher',
+        phone: { [Op.endsWith]: getTeacherByPhoneDto.phone },
+      },
+    });
+    if (teacher.length) return teacher;
+    throw new NotFoundException('Teachers not found or smt wrong');
+  }
+
+  //Update teachers by id
+  async updateTeacher(updateUserDto: UpdateUserDto, id: number) {
+    const teacher = await this.TeacherRepo.findOne({
+      where: { id: id, role: 'teacher' },
+    });
+    if (teacher) {
+      const updating = await this.TeacherRepo.update(updateUserDto, {
+        where: { id: id, role: 'teacher' },
+        returning: true,
+      });
+      return updating[1][0].dataValues;
+    }
+    throw new NotFoundException('Teacher not found or smt wrong');
   }
 
   //Delete teacher
